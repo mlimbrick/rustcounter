@@ -11,6 +11,10 @@ Author: Marleena Rose Limbrick
 
 ![rustcounter demo](demo.png)
 
+Terminal recording:
+
+https://asciinema.org/a/DedpQQsW42oHvYA9
+
 Example session:
 
 ```bash
