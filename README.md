@@ -7,6 +7,34 @@ Author: Marleena Rose Limbrick
 - Reading from the device prints the current counter value
 - Writing to the device increments the counter
 
+## Demo
+
+![rustcounter demo](demo.png)
+
+Example session:
+
+```bash
+$ sudo cat /dev/rustcounter
+0
+
+$ echo bump | sudo tee /dev/rustcounter > /dev/null
+$ sudo cat /dev/rustcounter
+1
+
+$ echo bump | sudo tee /dev/rustcounter > /dev/null
+$ echo bump | sudo tee /dev/rustcounter > /dev/null
+$ sudo cat /dev/rustcounter
+3
+```
+## Code Tour
+
+Interesting parts of the implementation:
+
+- `module!` registers the kernel module metadata and connects the module to the Linux kernel.
+- `MiscDeviceRegistration::register()` creates the `/dev/rustcounter` character device.
+- `write_iter()` increments the counter using `AtomicU64::fetch_add`.
+- `read_iter()` converts the counter value into a string and returns it to userspace.
+- `CONSUMED.swap(true, Ordering::SeqCst)` ensures reads behave like EOF until another write occurs.
 ---
 
 ## Build
@@ -87,7 +115,29 @@ sudo rmmod rustcounter
 ```
 
 ---
+## Why This Is Interesting
 
+This project demonstrates how Rust can safely interact with Linux kernel APIs while avoiding many common kernel-space bugs found in C implementations.
+
+The module uses `AtomicU64` instead of mutex-based synchronization, allowing concurrent writes without race conditions. Because the counter uses atomic operations directly, the implementation remains simple while still being thread-safe.
+
+This project also demonstrates:
+- Linux miscdevice registration
+- Character device interfaces in kernel space
+- Rust-for-Linux development workflows
+- Safe kernel memory handling in Rust
+
+## Future Work
+
+Potential future improvements include:
+
+- Supporting decrement and reset commands
+- Adding a `/proc/rustcounter` statistics interface
+- Tracking per-process counters
+- Adding configurable limits for the counter
+- Logging write timestamps
+- Supporting blocking reads and polling
+  
 ## Implementation Notes
 
 This project demonstrates:
