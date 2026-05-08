@@ -7,6 +7,8 @@ Author: Marleena Rose Limbrick
 - Reading from the device prints the current counter value
 - Writing to the device increments the counter
 
+### This is my first kernel module and my first publicly shipped Rust project!
+
 ## Demo
 
 ![rustcounter demo](demo.png)
